@@ -71,7 +71,7 @@
 			<div class="col-md-4">			
 				<h2>Entrees</h2>
 					{% for i in items %}
-						{% if i.course == 'Entree' %}
+						{% if i.course in ['Entree',''] %}
 						<div class="menu-item">
 							<h3>{{i.name}}</h3>
 							<p>{{i.description}}</p>

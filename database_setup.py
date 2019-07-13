@@ -1,15 +1,20 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
- 
-Base = declarative_base()
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-class Restaurant(Base):
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///restaurantmenu.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+
+class Restaurant(db.Model):
     __tablename__ = 'restaurant'
    
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+
+    def __repr__(self):
+        return '<\'Restaurant\': %r>' % self.name
 
     @property
     def serialize(self):
@@ -19,17 +24,20 @@ class Restaurant(Base):
            'id'           : self.id,
        }
  
-class MenuItem(Base):
+class MenuItem(db.Model):
     __tablename__ = 'menu_item'
 
 
-    name =Column(String(80), nullable = False)
-    id = Column(Integer, primary_key = True)
-    description = Column(String(250))
-    price = Column(String(8))
-    course = Column(String(250))
-    restaurant_id = Column(Integer,ForeignKey('restaurant.id'))
-    restaurant = relationship(Restaurant)
+    name = db.Column(db.String(80), nullable = False)
+    id = db.Column(db.Integer, primary_key = True)
+    description = db.Column(db.String(250))
+    price = db.Column(db.String(8))
+    course = db.Column(db.String(250))
+    restaurant_id = db.Column(db.Integer,db.ForeignKey('restaurant.id'))
+    restaurant = db.relationship(Restaurant)
+
+    def __repr__(self):
+        return '<{\'MenuItem\': %r, \'Price\': %r}>' % (self.name, self.price)
 
 
     @property
@@ -42,10 +50,3 @@ class MenuItem(Base):
            'price'         : self.price,
            'course'         : self.course,
        }
-
-
-
-engine = create_engine('sqlite:///restaurantmenu.db')
- 
-
-Base.metadata.create_all(engine)
